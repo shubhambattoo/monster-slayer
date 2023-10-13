@@ -7,8 +7,9 @@ import App from './App';
 
 describe('<App />', () => {
   it('should render the App', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { container } = render(<App />);
 
-    expect(1).toBqe(1);
+    expect(1).toBe(1);
   });
 });

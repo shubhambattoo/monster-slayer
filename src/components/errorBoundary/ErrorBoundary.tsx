@@ -1,5 +1,4 @@
 import { ErrorBoundary as Boundary } from 'react-error-boundary';
-import { Link } from 'react-router-dom';
 
 const FallbackComponent: React.FC<{
   error: Error;
@@ -34,7 +33,7 @@ const FallbackComponent: React.FC<{
       <button onClick={resetErrorBoundary}>Try again</button>
       <div style={{ margin: 1.5 }}>OR</div>
       <p style={{ margin: 1.5 }}>
-        Go Back to <Link to="/">Home Page</Link>
+        Go Back to <a href="/">Home Page</a>
       </p>
     </div>
   );
