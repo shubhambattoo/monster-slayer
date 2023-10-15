@@ -21,7 +21,7 @@ const Dialog: React.FC<{
   }, [show]);
 
   return (
-    <dialog ref={dialogRef} className="w-[30%]">
+    <dialog ref={dialogRef} className="w-[80%] sm:w-[30%]">
       <header className="flex justify-between p-4 ">
         <div className="prose prose-xl">Alert!</div>
         <button>&times;</button>
