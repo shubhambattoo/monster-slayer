@@ -5,7 +5,7 @@ import potion from '@images/potion.png';
 import surrender from '@images/surrender.png';
 import sword from '@images/sword.png';
 import { clsx } from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 type State = {
   playerHealth: number;
@@ -17,6 +17,63 @@ type State = {
 function calcDamage(min: number, max: number) {
   return Math.max(Math.floor(Math.random() * max) + 1, min);
 }
+
+const PlayerCard: React.FC<{ title: string; health: number }> = ({
+  title,
+  health,
+}) => {
+  return (
+    <div className="mt-[80px] flex w-[80%] flex-col rounded-md border-8 border-orange-200 bg-[rgba(4,27,66,.8)] p-6 text-center font-bold text-white sm:w-[50%]">
+      <div className="text-[.685rem] text-white sm:text-[1.25rem]">
+        {title} : {health <= 0 ? 0 : health}
+      </div>
+      <div className="m-auto mt-[15px] h-[35px] w-[80%] bg-[#eee] transition-[width]">
+        <div
+          className="m-0 h-[35px] w-[100%] bg-green-600 transition-[width]"
+          style={{
+            width: `${health <= 0 ? 0 : health}%`,
+          }}
+        ></div>
+      </div>
+    </div>
+  );
+};
+
+const ActionButton: React.FC<{
+  fn: () => void;
+  icon: string;
+  title: string;
+  spclAvailable?: boolean;
+}> = ({ fn, icon, title, spclAvailable }) => {
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (title.toLowerCase() === 'attack' && spclAvailable) {
+      btnRef.current?.setAttribute('disabled', `${spclAvailable}`);
+    } else {
+      btnRef.current?.removeAttribute('disabled');
+    }
+  }, [spclAvailable]);
+
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        onClick={fn}
+        className="flex justify-center rounded-md border-[5px] border-orange-200 bg-[rgba(4,27,66,.67)] p-2 disabled:opacity-60"
+        ref={btnRef}
+      >
+        <img
+          src={icon}
+          alt="sword icon which signifyes to hit"
+          className="w-[30px] sm:w-[50px]"
+        />
+      </button>
+      <div className="mt-3 text-[.65rem] uppercase text-white sm:text-[1rem]">
+        {title}
+      </div>
+    </div>
+  );
+};
 
 const Home: React.FC = () => {
   const [isModal, setIsModal] = useState(false);
@@ -131,101 +188,26 @@ const Home: React.FC = () => {
 
   function handleSuccess() {
     resetGame();
+    setIsModal(false);
+    setModalText('');
   }
 
   return (
     <>
       <Container>
-        <div className="mt-[80px] flex w-[80%] flex-col rounded-md border-8 border-orange-200 bg-[rgba(4,27,66,.8)] p-6 text-center font-bold text-white sm:w-[50%]">
-          <div className="text-[.685rem] text-white sm:text-[1.25rem]">
-            Monster Health :{' '}
-            {state.monsterHealth <= 0 ? 0 : state.monsterHealth}
-          </div>
-          <div className="m-auto mt-[15px] h-[35px] w-[80%] bg-[#eee] transition-[width]">
-            <div
-              className="m-0 h-[35px] w-[100%] bg-green-600 transition-[width]"
-              style={{
-                width: `${state.monsterHealth <= 0 ? 0 : state.monsterHealth}%`,
-              }}
-            ></div>
-          </div>
-        </div>
-        <div className="mt-[80px] flex w-[80%] flex-col rounded-md border-8 border-orange-200 bg-[rgba(4,27,66,.8)] p-6 text-center font-bold text-white sm:w-[50%]">
-          <div className="text-[.685rem] text-white sm:text-[1.25rem]">
-            Your Health : {state.playerHealth <= 0 ? 0 : state.playerHealth}
-          </div>
-          <div className="m-auto mt-[15px] h-[35px] w-[80%] bg-[#eee] transition-[width]">
-            <div
-              className="m-0 h-[35px] w-[100%] bg-green-600 transition-[width]"
-              style={{
-                width: `${state.playerHealth <= 0 ? 0 : state.playerHealth}%`,
-              }}
-            ></div>
-          </div>
-        </div>
+        <PlayerCard title="Monster Health" health={state.monsterHealth} />
+        <PlayerCard title="Your Health" health={state.playerHealth} />
 
         <div className="mt-[40px] flex w-[100%] justify-between px-2 sm:w-[50%] sm:justify-evenly sm:px-0">
-          <div className="flex flex-col items-center">
-            <button
-              onClick={hit}
-              className="flex justify-center rounded-md border-[5px] border-orange-200 bg-[rgba(4,27,66,.67)] p-2"
-            >
-              <img
-                src={sword}
-                alt="sword icon which signifyes to hit"
-                className="w-[30px] sm:w-[50px]"
-              />
-            </button>
-            <div className="mt-3 text-[.65rem] uppercase text-white sm:text-[1rem]">
-              Hit
-            </div>
-          </div>
-          <div className="flex flex-col items-center">
-            <button
-              onClick={attack}
-              className="flex justify-center rounded-md border-[5px] border-orange-200 bg-[rgba(4,27,66,.67)] p-2 disabled:opacity-60"
-              disabled={state.spclAvailable}
-            >
-              <img
-                src={axe}
-                alt="axe icon which signifyes to attack"
-                className="w-[30px] sm:w-[50px]"
-              />
-            </button>
-            <div className="mt-3 text-[.65rem] uppercase text-white sm:text-[1rem]">
-              Attack
-            </div>
-          </div>
-          <div className="flex flex-col items-center">
-            <button
-              onClick={heal}
-              className="flex justify-center rounded-md border-[5px] border-orange-200 bg-[rgba(4,27,66,.67)] p-2"
-            >
-              <img
-                src={potion}
-                alt="potion icon which signifyes to heal"
-                className="w-[30px] sm:w-[50px]"
-              />
-            </button>
-            <div className="mt-3 text-[.65rem] uppercase text-white sm:text-[1rem]">
-              Heal
-            </div>
-          </div>
-          <div className="flex flex-col items-center">
-            <button
-              onClick={resetGame}
-              className="flex justify-center rounded-md border-[5px] border-orange-200 bg-[rgba(4,27,66,.67)] p-2"
-            >
-              <img
-                src={surrender}
-                alt="white flag icon which signifyes to surrender"
-                className="w-[30px] sm:w-[50px]"
-              />
-            </button>
-            <div className="mt-3 text-[.65rem] uppercase text-white sm:text-[1rem]">
-              Give up!
-            </div>
-          </div>
+          <ActionButton title="Hit" fn={hit} icon={sword} />
+          <ActionButton
+            title="Attack"
+            fn={attack}
+            icon={axe}
+            spclAvailable={state.spclAvailable}
+          />
+          <ActionButton title="Heal" fn={heal} icon={potion} />
+          <ActionButton title="Give Up" fn={resetGame} icon={surrender} />
         </div>
         <div
           style={{
@@ -262,7 +244,12 @@ const Home: React.FC = () => {
             })}
         </div>
       </Container>
-      <Dialog show={isModal} onSuccess={handleSuccess} text={modalText} />
+      <Dialog
+        show={isModal}
+        onSuccess={handleSuccess}
+        text={modalText}
+        onCancel={handleSuccess}
+      />
     </>
   );
 };
